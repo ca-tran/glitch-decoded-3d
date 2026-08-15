@@ -8,7 +8,9 @@ export const useGalleryStore = create((set) => ({
   currentGallery: 'courtyard',
   setCurrentGallery: (gallery) => set({ currentGallery: gallery }),
 
-  controlMode: 'orbit', // 'orbit' (dev/Phase 1) | 'fps' | 'pointnav' (Phase 2)
+  // 'pointnav' is the default per the build guide — primary mode for mobile
+  // and non-gamer visitors; 'fps' is an optional desktop toggle.
+  controlMode: 'pointnav', // 'pointnav' | 'fps'
   setControlMode: (mode) => set({ controlMode: mode }),
 
   audioOn: false,
