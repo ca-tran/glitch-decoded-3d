@@ -18,6 +18,11 @@ export default function ArtworkPlane({ artwork }) {
   const isFocused = focusedArtworkId === artwork.id
 
   const { width, height } = artwork.dimensions
+  // Per the build guide's Phase 4 lighting notes: video works are self-lit
+  // (a screen genuinely emits light) rather than relying on room lighting,
+  // so they read correctly in Gallery 2's minimally-lit rooms. Emissive is
+  // additive on top of the focus highlight below.
+  const isVideo = artwork.mediaType === 'video'
 
   return (
     <mesh
@@ -41,7 +46,9 @@ export default function ArtworkPlane({ artwork }) {
         map={texture}
         roughness={0.85}
         metalness={0}
-        emissive={isFocused ? '#333333' : '#000000'}
+        emissiveMap={isVideo ? texture : undefined}
+        emissive={isVideo ? '#ffffff' : isFocused ? '#333333' : '#000000'}
+        emissiveIntensity={isVideo ? (isFocused ? 1.2 : 0.9) : 1}
       />
     </mesh>
   )
