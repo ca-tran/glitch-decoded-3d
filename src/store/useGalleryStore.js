@@ -13,8 +13,17 @@ export const useGalleryStore = create((set) => ({
   controlMode: 'pointnav', // 'pointnav' | 'fps'
   setControlMode: (mode) => set({ controlMode: mode }),
 
-  audioOn: false,
+  // Audio starts unmuted the moment the visitor enters (see IntroOverlay) —
+  // this just tracks the mute toggle from then on.
+  audioOn: true,
   setAudioOn: (on) => set({ audioOn: on }),
+
+  // Gates the scene behind a "click to enter" interaction — required
+  // anyway since AudioContext can only start on a real user gesture
+  // (Phase 5). A full branded title card is Phase 6; this is the minimal
+  // functional version that unblocks audio now.
+  hasEntered: false,
+  setHasEntered: (entered) => set({ hasEntered: entered }),
 
   focusedArtworkId: null,
   setFocusedArtworkId: (id) => set({ focusedArtworkId: id }),
