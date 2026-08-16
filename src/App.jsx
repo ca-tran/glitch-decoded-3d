@@ -1,5 +1,6 @@
 import { Suspense, useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js'
 import Courtyard from './components/gallery/Courtyard.jsx'
 import Gallery1 from './components/gallery/Gallery1.jsx'
 import Gallery2 from './components/gallery/Gallery2.jsx'
@@ -12,6 +13,10 @@ import ArtworkLabel from './components/artwork/ArtworkLabel.jsx'
 import { galleries } from './data/artworks.js'
 import { useGalleryStore } from './store/useGalleryStore.js'
 import { isDesktopDevice } from './utils/device.js'
+
+// Required once before any <rectAreaLight> renders (used for Gallery 1/4's
+// wall-wash fixtures) — without it RectAreaLight silently renders black.
+RectAreaLightUniformsLib.init()
 
 const GAP = 4
 const ROOM_ORDER = ['courtyard', 'gallery1', 'gallery2', 'gallery3', 'gallery4']
@@ -49,8 +54,11 @@ export default function App() {
           style={{ background: '#000' }}
         >
           <color attach="background" args={['#000000']} />
-          <ambientLight intensity={0.55} />
-          <directionalLight position={[15, 20, 10]} intensity={0.9} castShadow={false} />
+          {/* Very low global fill only — real light now comes from each
+              gallery's own fixtures (Phase 4). Keeps doorway gaps and the
+              gaps between rooms from going pure black without flattening
+              each room's mood. */}
+          <ambientLight intensity={0.05} />
 
           <Courtyard position={layout.courtyard} />
           <Gallery1 position={layout.gallery1} />
