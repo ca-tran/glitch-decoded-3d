@@ -8,6 +8,7 @@ import Gallery4 from './components/gallery/Gallery4.jsx'
 import FirstPersonControls from './components/player/FirstPersonControls.jsx'
 import PointNavControls from './components/player/PointNavControls.jsx'
 import ControlModeToggle from './components/ui/ControlModeToggle.jsx'
+import ArtworkLabel from './components/artwork/ArtworkLabel.jsx'
 import { galleries } from './data/artworks.js'
 import { useGalleryStore } from './store/useGalleryStore.js'
 import { isDesktopDevice } from './utils/device.js'
@@ -61,6 +62,7 @@ export default function App() {
         </Canvas>
       </Suspense>
       <ControlModeToggle />
+      <ArtworkLabel />
     </>
   )
 }

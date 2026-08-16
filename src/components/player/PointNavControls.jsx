@@ -17,7 +17,7 @@ const ndc = new THREE.Vector2()
 // ground plane on pointerdown and walks the camera to that point each
 // frame. This is the primary mode (desktop and mobile), per the build guide.
 export default function PointNavControls() {
-  const { camera, gl } = useThree()
+  const { camera, gl, scene } = useThree()
   const target = useRef(null) // THREE.Vector3 | null
 
   useEffect(() => {
@@ -31,6 +31,19 @@ export default function PointNavControls() {
         -((e.clientY - rect.top) / rect.height) * 2 + 1,
       )
       raycaster.setFromCamera(ndc, camera)
+
+      // If the nearest thing under the pointer is an artwork, let its own
+      // onClick (R3F's synthetic event system, fired independently of this
+      // raw listener) open the label instead of also walking toward it.
+      const hits = raycaster.intersectObjects(scene.children, true)
+      if (hits.length > 0 && hits[0].object.userData?.isArtwork) {
+        // Also cancel any walk already in progress from a prior click —
+        // opening a label should stop the player near the piece rather than
+        // let them keep walking away from it toward a stale target.
+        target.current = null
+        return
+      }
+
       const hit = new THREE.Vector3()
       if (raycaster.ray.intersectPlane(groundPlane, hit)) {
         target.current = hit
@@ -39,7 +52,7 @@ export default function PointNavControls() {
 
     dom.addEventListener('pointerdown', onPointerDown)
     return () => dom.removeEventListener('pointerdown', onPointerDown)
-  }, [camera, gl])
+  }, [camera, gl, scene])
 
   useFrame((_, delta) => {
     if (!target.current) return
