@@ -18,6 +18,12 @@ import { artworks } from '../src/data/artworks.js'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const OUT_DIR = join(__dirname, '../public/assets/artworks')
 const PIXELS_PER_METRE = 220 // controls output resolution, not room scale
+// Section 6: "cap artwork textures at 1600px on the long edge — full-res
+// files aren't needed at typical viewing distance and will bloat load
+// time." Current placeholders are well under this at 220px/m, but this
+// keeps the policy enforced if a future artwork's real dimensions are
+// large enough to exceed it (a big wall-scale work, say).
+const MAX_LONG_EDGE = 1600
 
 function escapeXml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
@@ -27,8 +33,14 @@ function escapeXml(str) {
 
 function buildSvg(artwork) {
   const { width, height } = artwork.dimensions
-  const w = Math.max(1, Math.round(width * PIXELS_PER_METRE))
-  const h = Math.max(1, Math.round(height * PIXELS_PER_METRE))
+  let w = Math.max(1, Math.round(width * PIXELS_PER_METRE))
+  let h = Math.max(1, Math.round(height * PIXELS_PER_METRE))
+  const longEdge = Math.max(w, h)
+  if (longEdge > MAX_LONG_EDGE) {
+    const scale = MAX_LONG_EDGE / longEdge
+    w = Math.round(w * scale)
+    h = Math.round(h * scale)
+  }
   const isVideo = artwork.mediaType === 'video'
 
   const title = escapeXml(artwork.title)
