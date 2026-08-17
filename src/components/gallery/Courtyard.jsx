@@ -3,6 +3,7 @@ import GalleryShell from './GalleryShell.jsx'
 import { rectanglePlan } from './floorplans.js'
 import { galleries } from '../../data/artworks.js'
 import RoomFillLight from './lighting/RoomFillLight.jsx'
+import DoorwaySign from './wayfinding/DoorwaySign.jsx'
 
 // Open-air courtyard — no ceiling, low perimeter walls, ambient sky light
 // rather than gallery spotlighting. Footprint is a placeholder pending real
@@ -32,6 +33,7 @@ export default function Courtyard({ position = [0, 0, 0] }) {
       <hemisphereLight args={['#8fa6c4', '#1c1c1c', 0.08]} />
       <group position={position}>
         <RoomFillLight position={[width / 2, height * 0.9, -depth / 2]} intensity={80} distance={9} color="#dce8ff" />
+        <DoorwaySign shape={shape} edgeIndex={1} label="Gallery 1 →" />
       </group>
     </>
   )

@@ -5,6 +5,7 @@ import { artworks, galleries } from '../../data/artworks.js'
 import GalleryArtworks from '../artwork/GalleryArtworks.jsx'
 import ProjectionLight from './lighting/ProjectionLight.jsx'
 import RoomFillLight from './lighting/RoomFillLight.jsx'
+import DoorwaySign from './wayfinding/DoorwaySign.jsx'
 
 // Right-triangle room with a rounded corner, 8410 x 5400mm (hyp ~8460mm).
 // Per the plan notes: white intro wall (edge 0), black elsewhere — dim
@@ -44,6 +45,8 @@ export default function Gallery3({ position = [0, 0, 0] }) {
           />
         )}
         <RoomFillLight position={[width / 2, height / 2, -depth / 2]} intensity={16} distance={7} />
+        <DoorwaySign shape={shape} edgeIndex={2} label="← Gallery 2" />
+        <DoorwaySign shape={shape} edgeIndex={1} label="Gallery 4 →" />
       </group>
     </>
   )

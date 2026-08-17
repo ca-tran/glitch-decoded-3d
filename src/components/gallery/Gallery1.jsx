@@ -5,6 +5,7 @@ import { galleries } from '../../data/artworks.js'
 import GalleryArtworks from '../artwork/GalleryArtworks.jsx'
 import WallWashLight from './lighting/WallWashLight.jsx'
 import RoomFillLight from './lighting/RoomFillLight.jsx'
+import DoorwaySign from './wayfinding/DoorwaySign.jsx'
 
 // Rectangle room, 5800 x 5100mm. White walls per the plan notes.
 // Doorways: edge 3 (west) to the courtyard, edge 1 (east) to Gallery 2 —
@@ -33,6 +34,8 @@ export default function Gallery1({ position = [0, 0, 0] }) {
         <WallWashLight shape={shape} edgeIndex={0} intensity={7} />
         <WallWashLight shape={shape} edgeIndex={2} intensity={7} />
         <RoomFillLight position={[width / 2, height / 2, -depth / 2]} intensity={45} distance={7} />
+        <DoorwaySign shape={shape} edgeIndex={3} label="← Courtyard" />
+        <DoorwaySign shape={shape} edgeIndex={1} label="Gallery 2 →" />
       </group>
     </>
   )

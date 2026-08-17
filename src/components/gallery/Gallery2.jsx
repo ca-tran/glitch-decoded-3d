@@ -4,6 +4,7 @@ import { rightTrianglePlan } from './floorplans.js'
 import { galleries } from '../../data/artworks.js'
 import GalleryArtworks from '../artwork/GalleryArtworks.jsx'
 import RoomFillLight from './lighting/RoomFillLight.jsx'
+import DoorwaySign from './wayfinding/DoorwaySign.jsx'
 
 // Right-triangle room, 4700 x 8660mm. Black walls — works here are lit
 // primarily by their own screen glow (Phase 4), so a dark room reads correctly.
@@ -32,6 +33,8 @@ export default function Gallery2({ position = [0, 0, 0] }) {
       <GalleryArtworks galleryId="gallery2" position={position} />
       <group position={position}>
         <RoomFillLight position={[width / 3, height / 2, -depth / 3]} intensity={9} distance={6} />
+        <DoorwaySign shape={shape} edgeIndex={2} label="← Gallery 1" height={2.4} />
+        <DoorwaySign shape={shape} edgeIndex={1} label="Gallery 3 →" height={2.4} />
       </group>
     </>
   )

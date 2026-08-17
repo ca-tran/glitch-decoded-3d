@@ -1,12 +1,14 @@
 import { useGalleryStore } from '../../store/useGalleryStore.js'
 import { startAmbient } from '../../audio/audioEngine.js'
 
-// Minimal "click to enter" gate — necessary functional infrastructure for
-// Phase 5's audio (AudioContext can only start inside a real user gesture,
-// not a React effect), not the full branded title card. That's Phase 6
-// (logo, wayfinding, styled to the Blue Screen of Death visual identity
-// per the build guide) — this component's job is just to unblock audio
-// and get out of the way.
+// Title card + "click to enter" gate. AudioContext creation must happen
+// synchronously inside a real user gesture (browsers block autoplay with
+// sound), which this component exists to satisfy — see Phase 5.
+//
+// The wordmark is a CSS glitch-text effect (layered red/cyan channel
+// offset) rather than the real logo — Section 9's placeholder strategy:
+// on-brand in spirit (this is, after all, "Glitch Decoded"), swappable
+// for the real vector logo file with no structural changes once supplied.
 export default function IntroOverlay() {
   const hasEntered = useGalleryStore((s) => s.hasEntered)
   const setHasEntered = useGalleryStore((s) => s.setHasEntered)
@@ -33,13 +35,24 @@ export default function IntroOverlay() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 24,
+        gap: 28,
         zIndex: 100,
         cursor: 'pointer',
       }}
     >
-      <div style={{ fontSize: 28, letterSpacing: 3 }}>GLITCH DECODED</div>
-      <div style={{ fontSize: 13, opacity: 0.6, textAlign: 'center', maxWidth: 360, lineHeight: 1.6 }}>
+      <div
+        style={{
+          fontSize: 34,
+          fontWeight: 700,
+          letterSpacing: 4,
+          position: 'relative',
+          color: '#fff',
+          textShadow: '-2px 0 #ff2b6d, 2px 2px #00e5ff',
+        }}
+      >
+        GLITCH DECODED
+      </div>
+      <div style={{ fontSize: 13, opacity: 0.6, textAlign: 'center', maxWidth: 380, lineHeight: 1.6 }}>
         A first-person walkthrough of the exhibition.
         <br />
         Click anywhere to enter — this also enables ambient audio.
