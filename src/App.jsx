@@ -1,63 +1,21 @@
-import { Suspense, useMemo } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js'
-import Courtyard from './components/gallery/Courtyard.jsx'
-import Gallery1 from './components/gallery/Gallery1.jsx'
-import Gallery2 from './components/gallery/Gallery2.jsx'
-import Gallery3 from './components/gallery/Gallery3.jsx'
-import Gallery4 from './components/gallery/Gallery4.jsx'
-import FirstPersonControls from './components/player/FirstPersonControls.jsx'
-import PointNavControls from './components/player/PointNavControls.jsx'
+import { lazy, Suspense } from 'react'
 import ControlModeToggle from './components/ui/ControlModeToggle.jsx'
 import IntroOverlay from './components/ui/IntroOverlay.jsx'
-import LoadingScreen from './components/ui/LoadingScreen.jsx'
+import BootScreen from './components/ui/BootScreen.jsx'
 import Minimap from './components/ui/Minimap.jsx'
 import ArtworkLabel from './components/artwork/ArtworkLabel.jsx'
 import AudioManager from './components/audio/AudioManager.jsx'
-import PlayerTracker from './components/player/PlayerTracker.jsx'
-import { useGalleryStore } from './store/useGalleryStore.js'
-import { isDesktopDevice } from './utils/device.js'
-import { computeRoomLayout } from './utils/roomLayout.js'
 
-// Required once before any <rectAreaLight> renders (used for Gallery 1/4's
-// wall-wash fixtures) — without it RectAreaLight silently renders black.
-RectAreaLightUniformsLib.init()
-
-function useLayout() {
-  return useMemo(() => computeRoomLayout(), [])
-}
+// Section 6: "wrap the whole R3F canvas in React.lazy + Suspense" — three.js/
+// r3f/drei is a large chunk; splitting it out lets the (plain-DOM) intro
+// overlay paint immediately instead of waiting on it.
+const GalleryScene = lazy(() => import('./components/GalleryScene.jsx'))
 
 export default function App() {
-  const layout = useLayout()
-  const controlMode = useGalleryStore((s) => s.controlMode)
-  // Safety net: FPS mode never activates on touch/coarse-pointer devices
-  // even if store state somehow ends up 'fps' there.
-  const useFps = controlMode === 'fps' && isDesktopDevice()
-
   return (
     <>
-      <Suspense fallback={<LoadingScreen />}>
-        <Canvas
-          shadows
-          camera={{ position: [3, 1.6, 0], rotation: [0, -Math.PI / 2, 0], fov: 70, near: 0.1, far: 200 }}
-          style={{ background: '#000' }}
-        >
-          <color attach="background" args={['#000000']} />
-          {/* Very low global fill only — real light now comes from each
-              gallery's own fixtures (Phase 4). Keeps doorway gaps and the
-              gaps between rooms from going pure black without flattening
-              each room's mood. */}
-          <ambientLight intensity={0.05} />
-
-          <Courtyard position={layout.courtyard} />
-          <Gallery1 position={layout.gallery1} />
-          <Gallery2 position={layout.gallery2} />
-          <Gallery3 position={layout.gallery3} />
-          <Gallery4 position={layout.gallery4} />
-
-          {useFps ? <FirstPersonControls /> : <PointNavControls />}
-          <PlayerTracker />
-        </Canvas>
+      <Suspense fallback={<BootScreen />}>
+        <GalleryScene />
       </Suspense>
       <ControlModeToggle />
       <ArtworkLabel />

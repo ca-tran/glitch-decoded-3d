@@ -2,30 +2,37 @@ import { useMemo } from 'react'
 import { useGalleryStore } from '../../store/useGalleryStore.js'
 import { galleries } from '../../data/artworks.js'
 import { computeRoomLayout, ROOM_ORDER, ROOM_LABELS } from '../../utils/roomLayout.js'
-import { rectanglePlan, rightTrianglePlan, roundedRightTrianglePlan, lShapePlan } from '../gallery/floorplans.js'
+import {
+  rectangleOutline,
+  rightTriangleOutline,
+  roundedRightTriangleOutline,
+  lShapeOutline,
+} from '../../utils/roomOutlines.js'
 
 // Top-down wayfinding overlay — real room footprints (not just bounding
-// boxes), reusing the exact same shape builders the 3D rooms are built
-// from, so the minimap actually matches the geometry you're standing in.
+// boxes). Uses plain-JS outline math (roomOutlines.js) rather than
+// gallery/floorplans.js's THREE.Shape builders — Minimap loads eagerly
+// (outside the lazy-loaded GalleryScene chunk, Section 6), and importing
+// floorplans.js would pull all of `three` into that critical path just to
+// draw an SVG polygon.
 // Placeholder pixel-icon styling pending the real Wayfindings page assets
 // (Section 9) — this is plain SVG for now.
 
-const SHAPE_BUILDERS = {
-  courtyard: rectanglePlan,
-  gallery1: rectanglePlan,
-  gallery2: rightTrianglePlan,
-  gallery3: roundedRightTrianglePlan,
-  gallery4: lShapePlan,
+const OUTLINE_BUILDERS = {
+  courtyard: rectangleOutline,
+  gallery1: rectangleOutline,
+  gallery2: rightTriangleOutline,
+  gallery3: roundedRightTriangleOutline,
+  gallery4: lShapeOutline,
 }
 
 const SVG_WIDTH = 300
 const PADDING = 10
 
 // Shape-space (x, y) -> world (x, -y), same convention as roomGeometry.js.
-function shapeToWorldPoints(shape, position) {
-  const pts = shape.getPoints(24)
+function outlineToWorldPoints(points, position) {
   const [px, , pz] = position
-  return pts.map((p) => [px + p.x, pz - p.y])
+  return points.map(([x, y]) => [px + x, pz - y])
 }
 
 function useRoomOutlines() {
@@ -39,8 +46,8 @@ function useRoomOutlines() {
 
     for (const key of ROOM_ORDER) {
       const { width, depth } = galleries[key]
-      const shape = SHAPE_BUILDERS[key](width, depth)
-      const points = shapeToWorldPoints(shape, layout[key])
+      const localPoints = OUTLINE_BUILDERS[key](width, depth)
+      const points = outlineToWorldPoints(localPoints, layout[key])
       outlines[key] = points
       for (const [x, z] of points) {
         minX = Math.min(minX, x)
