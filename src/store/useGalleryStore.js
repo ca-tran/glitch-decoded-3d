@@ -27,4 +27,11 @@ export const useGalleryStore = create((set) => ({
 
   focusedArtworkId: null,
   setFocusedArtworkId: (id) => set({ focusedArtworkId: id }),
+
+  // Live camera transform, throttled from inside the Canvas (see
+  // PlayerTracker.jsx) — read by Minimap.jsx, which lives outside the R3F
+  // tree and has no other way to see the camera.
+  playerPosition: [0, 1.6, 0],
+  playerHeading: 0, // camera.rotation.y, radians
+  setPlayerTransform: (position, heading) => set({ playerPosition: position, playerHeading: heading }),
 }))

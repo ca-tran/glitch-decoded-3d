@@ -5,6 +5,7 @@ import { galleries } from '../../data/artworks.js'
 import GalleryArtworks from '../artwork/GalleryArtworks.jsx'
 import WallWashLight from './lighting/WallWashLight.jsx'
 import RoomFillLight from './lighting/RoomFillLight.jsx'
+import DoorwaySign from './wayfinding/DoorwaySign.jsx'
 
 // L-shape room, 3680 x 4700mm. Black walls, spotlit sculptures + wall-washed
 // flat works (Phase 4), matching Gallery 1's lighting approach.
@@ -34,6 +35,7 @@ export default function Gallery4({ position = [0, 0, 0] }) {
         <WallWashLight shape={shape} edgeIndex={3} intensity={5} width={1.8} />
         <WallWashLight shape={shape} edgeIndex={4} intensity={5} width={1.8} />
         <RoomFillLight position={[width / 2, height / 2, -depth / 2]} intensity={24} distance={5} />
+        <DoorwaySign shape={shape} edgeIndex={5} label="← Gallery 3" height={2.4} />
       </group>
     </>
   )

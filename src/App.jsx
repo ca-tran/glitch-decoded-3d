@@ -10,34 +10,21 @@ import FirstPersonControls from './components/player/FirstPersonControls.jsx'
 import PointNavControls from './components/player/PointNavControls.jsx'
 import ControlModeToggle from './components/ui/ControlModeToggle.jsx'
 import IntroOverlay from './components/ui/IntroOverlay.jsx'
+import LoadingScreen from './components/ui/LoadingScreen.jsx'
+import Minimap from './components/ui/Minimap.jsx'
 import ArtworkLabel from './components/artwork/ArtworkLabel.jsx'
 import AudioManager from './components/audio/AudioManager.jsx'
-import { galleries } from './data/artworks.js'
+import PlayerTracker from './components/player/PlayerTracker.jsx'
 import { useGalleryStore } from './store/useGalleryStore.js'
 import { isDesktopDevice } from './utils/device.js'
+import { computeRoomLayout } from './utils/roomLayout.js'
 
 // Required once before any <rectAreaLight> renders (used for Gallery 1/4's
 // wall-wash fixtures) — without it RectAreaLight silently renders black.
 RectAreaLightUniformsLib.init()
 
-const GAP = 4
-const ROOM_ORDER = ['courtyard', 'gallery1', 'gallery2', 'gallery3', 'gallery4']
-
-// Row layout, placeholder pending real floorplan adjacency. Each room's z is
-// offset by half its own depth so every room's centered doorway lands on a
-// shared z=0 "spine" — see the door-edge comments in each Gallery*.jsx and
-// roomGeometry.js for how doorway cutouts are computed.
 function useLayout() {
-  return useMemo(() => {
-    let x = 0
-    const positions = {}
-    for (const key of ROOM_ORDER) {
-      const { width, depth } = galleries[key]
-      positions[key] = [x, 0, depth / 2]
-      x += width + GAP
-    }
-    return positions
-  }, [])
+  return useMemo(() => computeRoomLayout(), [])
 }
 
 export default function App() {
@@ -49,7 +36,7 @@ export default function App() {
 
   return (
     <>
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoadingScreen />}>
         <Canvas
           shadows
           camera={{ position: [3, 1.6, 0], rotation: [0, -Math.PI / 2, 0], fov: 70, near: 0.1, far: 200 }}
@@ -69,11 +56,13 @@ export default function App() {
           <Gallery4 position={layout.gallery4} />
 
           {useFps ? <FirstPersonControls /> : <PointNavControls />}
+          <PlayerTracker />
         </Canvas>
       </Suspense>
       <ControlModeToggle />
       <ArtworkLabel />
       <AudioManager />
+      <Minimap />
       <IntroOverlay />
     </>
   )
